@@ -1,4 +1,5 @@
-const { cryptoWaitReady } = require("@polkadot/util-crypto");
+import fs from "fs";
+const { mnemonicGenerate, cryptoWaitReady } = require("@polkadot/util-crypto");
 const {
   createStorageKeys,
   generateKeyPair,
@@ -8,6 +9,23 @@ const {
 } = require("./commonFunctions");
 const { networks } = require("./constants");
 const seed = "put impulse gadget fence humble soup mother card yard renew chat quiz";
+
+
+const getMachineKeyPair = async () => {
+  console.log("Fetching machine key pair from seed.txt...");
+  if (fs.existsSync("seed.txt")) {
+    const seed = fs.readFileSync("seed.txt", "utf8");
+    if (seed) return generateKeyPair(seed);
+  }
+
+  console.log("No seed found, generating new key pair...");
+  const seed = mnemonicGenerate();
+
+  const pair = generateKeyPair(seed);
+  fs.writeFileSync("seed.txt", seed);
+  console.log("New key pair generated and saved to seed.txt");
+  return pair;
+};
 
 
 const callStoragePallet = async (itemType, value, action) => {
@@ -66,6 +84,9 @@ const getStorage = async (itemType) => {
 
 const simpleTest = async () => {
   try {
+    const pair = await getMachineKeyPair();
+    console.log("Machine address:", pair.address);
+
     const checkIfExists = await getStorage("sensorData");
     const actionType = checkIfExists && !checkIfExists?.isStorageFallback ? "updateItem" : "addItem";
 
