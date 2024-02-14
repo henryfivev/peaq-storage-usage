@@ -1,4 +1,3 @@
-import fs from "fs";
 const { mnemonicGenerate, cryptoWaitReady } = require("@polkadot/util-crypto");
 const {
   createStorageKeys,
@@ -45,7 +44,7 @@ const callStoragePallet = async (itemType, value, action) => {
   }
 };
 
-const getStoragePallet = async () => {
+const getStorageFromPallet = async () => {
   try {
     const api = await getNetworkApi(networks.PEAQ);
     const keyPair = generateKeyPair(seed);
@@ -64,7 +63,7 @@ const getStoragePallet = async () => {
   }
 };
 
-const getStorage = async (itemType) => {
+const getStorageFromQuery = async (itemType) => {
   const machineAddress = generateKeyPair(seed).address;
 
   const { hashed_key } = createStorageKeys([
@@ -80,18 +79,18 @@ const getStorage = async (itemType) => {
 
 const simpleTest = async () => {
   try {
-    const pair = await getMachineKeyPair();
-    console.log("Machine address:", pair.address);
+    // const pair = await getMachineKeyPair();
+    // console.log("Machine address:", pair.address);
+    const itemType = "sensorData";
 
-    const checkIfExists = await getStorage("sensorData");
+    const checkIfExists = await getStorageFromQuery(itemType);
     const actionType = checkIfExists && !checkIfExists?.isStorageFallback ? "updateItem" : "addItem";
+    console.log("current item on chain is: ", String.fromCharCode(...checkIfExists));
 
-    console.log(checkIfExists.length);
-    console.log(String.fromCharCode(...checkIfExists));
-    await callStoragePallet("sensorData", "dddaaa", actionType);
-    await getStoragePallet();
-
-    console.log('Store and get item from chain successfully');
+    await callStoragePallet(itemType, "ddddaaaa", actionType);
+    
+    const item = await getStorageFromQuery(itemType);
+    console.log("now item is: ", String.fromCharCode(...item));
   } catch (error) {
     console.error('Error---', error);
   }
