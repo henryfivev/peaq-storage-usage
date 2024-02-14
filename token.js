@@ -10,7 +10,6 @@ const {
 const { networks } = require("./constants");
 const seed = "put impulse gadget fence humble soup mother card yard renew chat quiz";
 
-
 const getMachineKeyPair = async () => {
   console.log("Fetching machine key pair from seed.txt...");
   if (fs.existsSync("seed.txt")) {
@@ -26,7 +25,6 @@ const getMachineKeyPair = async () => {
   console.log("New key pair generated and saved to seed.txt");
   return pair;
 };
-
 
 const callStoragePallet = async (itemType, value, action) => {
   try {
@@ -66,7 +64,6 @@ const getStoragePallet = async () => {
   }
 };
 
-
 const getStorage = async (itemType) => {
   const machineAddress = generateKeyPair(seed).address;
 
@@ -80,7 +77,6 @@ const getStorage = async (itemType) => {
   ]);
   return checkIfExists;
 };
-
 
 const simpleTest = async () => {
   try {
@@ -100,7 +96,6 @@ const simpleTest = async () => {
     console.error('Error---', error);
   }
 };
-
 
 const main = async () => {
   await cryptoWaitReady();
